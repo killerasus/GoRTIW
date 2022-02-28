@@ -7,26 +7,31 @@ import (
 	"image/jpeg"
 	"log"
 	"math"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/engoengine/glm"
 )
 
-func computeColor(ray *RTIW.Ray, surfaces *RTIW.Surfaces) color.RGBA {
+func ColorRGBAFromVec3(vec glm.Vec3) color.RGBA {
+	return color.RGBA{R: uint8(255.99 * vec.X()), G: uint8(255.99 * vec.Y()), B: uint8(255.99 * vec.Z()), A: uint8(255)}
+}
+
+func ComputeColor(ray *RTIW.Ray, surfaces *RTIW.Surfaces) glm.Vec3 {
 	hitRecord := RTIW.HitRecord{}
 	if surfaces.Hit(ray, 0, math.MaxFloat32, &hitRecord) {
 		n := glm.Vec3{hitRecord.Normal.X() + 1, hitRecord.Normal.Y() + 1, hitRecord.Normal.Z() + 1}
 		n = n.Mul(0.5)
-		return color.RGBA{R: uint8(255.99 * n.X()), G: uint8(255.99 * n.Y()), B: uint8(255.99 * n.Z()), A: uint8(255)}
+		return n
 	}
 	unitDirection := ray.Direction.Normalized()
 	t := 0.5 * (unitDirection.Y() + 1.0)
 	interpA := glm.Vec3{1.0, 1.0, 1.0}
 	interpB := glm.Vec3{0.5, 0.7, 1.0}
-	paramA := interpA.Mul(1.0 - t)
-	paramB := interpB.Mul(t)
-	computed := paramA.Add(&paramB)
-	return color.RGBA{R: uint8(255.99 * computed.X()), G: uint8(255.99 * computed.Y()), B: uint8(255.99 * computed.Z()), A: 1}
+	computed := interpA.Mul(1.0 - t)
+	computed.AddScaledVec(t, &interpB)
+	return computed
 }
 
 func main() {
@@ -38,13 +43,16 @@ func main() {
 
 	defer file.Close()
 
-	lowerLeftCorner := glm.Vec3{-2.0, -1.0, -1.0}
-	horizontal := glm.Vec3{4.0, 0.0, 0.0}
-	vertical := glm.Vec3{0.0, 2.0, 0.0}
-	origin := glm.Vec3{0.0, 0.0, 0.0}
+	camera := RTIW.Camera{
+		Origin:          glm.Vec3{0.0, 0.0, 0.0},
+		LowerLeftCorner: glm.Vec3{-2.0, -1.0, -1.0},
+		Horizontal:      glm.Vec3{4.0, 0.0, 0.0},
+		Vertical:        glm.Vec3{0.0, 2.0, 0.0},
+	}
 
 	nx := 200
 	ny := 100
+	ns := 100
 
 	output := image.NewRGBA(image.Rect(0, 0, nx, ny))
 
@@ -54,16 +62,21 @@ func main() {
 	surfaces.List = append(surfaces.List, &sphere1)
 	surfaces.List = append(surfaces.List, &sphere2)
 
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+
 	for j := 0; j < ny; j++ {
 		for i := 0; i < nx; i++ {
-			u := float32(float32(i) / float32(nx))
-			v := float32(float32(j) / float32(ny))
-			paramVert := vertical.Mul(v)
-			paramHorz := horizontal.Mul(u)
-			horzVert := paramHorz.Add(&paramVert)
-			direction := lowerLeftCorner.Add(&horzVert)
-			ray := RTIW.Ray{Origin: origin, Direction: direction}
-			c := computeColor(&ray, &surfaces)
+			acc := glm.Vec3{}
+			for s := 0; s < ns; s++ {
+				u := (float32(i) + r.Float32()) / float32(nx)
+				v := (float32(j) + r.Float32()) / float32(ny)
+				ray := camera.GetRay(u, v)
+				color := ComputeColor(&ray, &surfaces)
+				acc.AddWith(&color)
+			}
+
+			acc.MulWith(1 / float32(ns))
+			c := ColorRGBAFromVec3(acc)
 			output.SetRGBA(i, ny-j, c)
 		}
 	}
