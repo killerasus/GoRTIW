@@ -64,7 +64,7 @@ func main() {
 			direction := lowerLeftCorner.Add(&horzVert)
 			ray := RTIW.Ray{Origin: origin, Direction: direction}
 			c := computeColor(&ray, &surfaces)
-			output.SetRGBA(i, j, c)
+			output.SetRGBA(i, ny-j, c)
 		}
 	}
 
