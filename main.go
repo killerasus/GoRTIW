@@ -63,8 +63,8 @@ func main() {
 		List: []RTIW.Surface{
 			RTIW.NewSphere(glm.Vec3{0, 0, -1}, 0.5, Materials.NewLambertian(glm.Vec3{0.8, 0.3, 0.3})),
 			RTIW.NewSphere(glm.Vec3{0, -100.5, -1}, 100, Materials.NewLambertian(glm.Vec3{0.8, 0.8, 0.0})),
-			RTIW.NewSphere(glm.Vec3{1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.6, 0.2})),
-			RTIW.NewSphere(glm.Vec3{-1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.8, 0.8})),
+			RTIW.NewSphere(glm.Vec3{1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.6, 0.2}, 1.0)),
+			RTIW.NewSphere(glm.Vec3{-1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.8, 0.8}, 0.3)),
 		},
 	}
 
