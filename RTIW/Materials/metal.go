@@ -26,7 +26,7 @@ func NewMetal(v glm.Vec3, f float32) *Metal {
 func (m *Metal) Scatter(ray *RTIW.Ray, hr *RTIW.HitRecord, attenuation *glm.Vec3, scatter *RTIW.Ray, rand *rand.Rand) bool {
 	normDirection := ray.Direction.Normalized()
 	reflected := Utils.Reflect(&normDirection, &hr.Normal)
-	inSphere := RTIW.RandomInUnitSphere(rand)
+	inSphere := Utils.RandomInUnitSphere(rand)
 	reflected.AddScaledVec(m.Fuzz, &inSphere)
 	*scatter = RTIW.Ray{Origin: hr.P, Direction: reflected}
 	*attenuation = m.Albedo

@@ -1,8 +1,8 @@
-package RTIW
+package Shapes
 
 import (
+	"RTIW/RTIW"
 	"math"
-	"math/rand"
 
 	"github.com/engoengine/glm"
 )
@@ -10,15 +10,15 @@ import (
 type Sphere struct {
 	Center   glm.Vec3
 	Radius   float32
-	Material Material
+	Material RTIW.Material
 }
 
-func NewSphere(center glm.Vec3, radius float32, material Material) *Sphere {
+func NewSphere(center glm.Vec3, radius float32, material RTIW.Material) *Sphere {
 	s := Sphere{Center: center, Radius: radius, Material: material}
 	return &s
 }
 
-func (s *Sphere) Hit(ray *Ray, tMin, tMax float32, hit *HitRecord) bool {
+func (s *Sphere) Hit(ray *RTIW.Ray, tMin, tMax float32, hit *RTIW.HitRecord) bool {
 	oc := ray.Origin.Sub(&s.Center)
 	a := ray.Direction.Dot(&ray.Direction)
 	b := oc.Dot(&ray.Direction)
@@ -45,21 +45,6 @@ func (s *Sphere) Hit(ray *Ray, tMin, tMax float32, hit *HitRecord) bool {
 	return false
 }
 
-func (s *Sphere) GetMaterial() Material {
+func (s *Sphere) GetMaterial() RTIW.Material {
 	return s.Material
-}
-
-func RandomInUnitSphere(r *rand.Rand) glm.Vec3 {
-	onesVec := glm.Vec3{1, 1, 1}
-	p := glm.Vec3{r.Float32(), r.Float32(), r.Float32()}
-	p.SubWith(&onesVec)
-	p.MulWith(2)
-
-	for p.Len2() >= 1.0 {
-		p = glm.Vec3{r.Float32(), r.Float32(), r.Float32()}
-		p.SubWith(&onesVec)
-		p.MulWith(2)
-	}
-
-	return p
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"RTIW/RTIW"
 	"RTIW/RTIW/Materials"
+	"RTIW/RTIW/Shapes"
 	"RTIW/RTIW/Utils"
 	"image"
 	"image/jpeg"
@@ -61,10 +62,10 @@ func main() {
 
 	surfaces := RTIW.Surfaces{
 		List: []RTIW.Surface{
-			RTIW.NewSphere(glm.Vec3{0, 0, -1}, 0.5, Materials.NewLambertian(glm.Vec3{0.8, 0.3, 0.3})),
-			RTIW.NewSphere(glm.Vec3{0, -100.5, -1}, 100, Materials.NewLambertian(glm.Vec3{0.8, 0.8, 0.0})),
-			RTIW.NewSphere(glm.Vec3{1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.6, 0.2}, 1.0)),
-			RTIW.NewSphere(glm.Vec3{-1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.8, 0.8}, 0.3)),
+			Shapes.NewSphere(glm.Vec3{0, 0, -1}, 0.5, Materials.NewLambertian(glm.Vec3{0.8, 0.3, 0.3})),
+			Shapes.NewSphere(glm.Vec3{0, -100.5, -1}, 100, Materials.NewLambertian(glm.Vec3{0.8, 0.8, 0.0})),
+			Shapes.NewSphere(glm.Vec3{1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.6, 0.2}, 1.0)),
+			Shapes.NewSphere(glm.Vec3{-1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.8, 0.8}, 0.3)),
 		},
 	}
 
