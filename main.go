@@ -62,16 +62,26 @@ func main() {
 
 	defer file.Close()
 
-	camera := RTIW.Camera{
-		Origin:          glm.Vec3{0.0, 0.0, 0.0},
-		LowerLeftCorner: glm.Vec3{-2.0, -1.0, -1.0},
-		Horizontal:      glm.Vec3{4.0, 0.0, 0.0},
-		Vertical:        glm.Vec3{0.0, 2.0, 0.0},
-	}
-
 	nx := 200
 	ny := 100
 	ns := 100
+
+	//Camera setup
+	origin := glm.Vec3{3, 3, 2}
+	lookAt := glm.Vec3{0, 0, -1}
+	focusVector := origin.Sub(&lookAt)
+	distToFocus := focusVector.Len()
+	aperture := float32(2.0)
+
+	camera := RTIW.NewCamera(
+		origin,                  //Origin
+		lookAt,                  //LookAt
+		glm.Vec3{0, 1, 0},       //Up
+		20,                      //FOV
+		float32(nx)/float32(ny), //Aspect
+		aperture,                //Aperture
+		distToFocus,             //Distance to focus
+	)
 
 	output := image.NewRGBA(image.Rect(0, 0, nx, ny))
 
@@ -92,7 +102,7 @@ func main() {
 			for s := 0; s < ns; s++ {
 				u := (float32(i) + r.Float32()) / float32(nx)
 				v := (float32(j) + r.Float32()) / float32(ny)
-				ray := camera.GetRay(u, v)
+				ray := camera.GetRay(u, v, r)
 				color := ComputeColor(&ray, &surfaces, 0, r)
 				acc.AddWith(&color)
 			}
