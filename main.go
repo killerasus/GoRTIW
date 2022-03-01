@@ -5,12 +5,14 @@ import (
 	"RTIW/RTIW/Materials"
 	"RTIW/RTIW/Shapes"
 	"RTIW/RTIW/Utils"
+	"flag"
 	"image"
-	"image/jpeg"
+	"image/png"
 	"log"
 	"math"
 	"math/rand"
 	"os"
+	"runtime/pprof"
 	"time"
 
 	"github.com/engoengine/glm"
@@ -38,9 +40,22 @@ func ComputeColor(ray *RTIW.Ray, surfaces *RTIW.Surfaces, depth int, r *rand.Ran
 	return computed
 }
 
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+
 func main() {
 
-	file, err := os.Create("output.jpg")
+	flag.Parse()
+	if *cpuprofile != "" {
+		f, err := os.Create(*cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
+	file, err := os.Create("output.png")
 	if err != nil {
 		log.Fatal("error creating ouput file: ", err)
 	}
@@ -93,7 +108,7 @@ func main() {
 		}
 	}
 
-	err = jpeg.Encode(file, output, nil)
+	err = png.Encode(file, output)
 	if err != nil {
 		log.Fatal("error enconding jpg: ", err)
 	}
