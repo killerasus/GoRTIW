@@ -13,8 +13,7 @@ type Lambertian struct {
 }
 
 func NewLambertian(v glm.Vec3) *Lambertian {
-	l := Lambertian{Albedo: v}
-	return &l
+	return &Lambertian{Albedo: v}
 }
 
 func (l *Lambertian) Scatter(ray *RTIW.Ray, hr *RTIW.HitRecord, attenuation *glm.Vec3, scatter *RTIW.Ray, rand *rand.Rand) bool {

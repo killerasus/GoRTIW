@@ -14,8 +14,7 @@ type Sphere struct {
 }
 
 func NewSphere(center glm.Vec3, radius float32, material RTIW.Material) *Sphere {
-	s := Sphere{Center: center, Radius: radius, Material: material}
-	return &s
+	return &Sphere{Center: center, Radius: radius, Material: material}
 }
 
 func (s *Sphere) Hit(ray *RTIW.Ray, tMin, tMax float32, hit *RTIW.HitRecord) bool {

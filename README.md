@@ -8,7 +8,7 @@ The current status of the code is shown below:
 
 | Chapter     | Result                  |
 | :---------: | :---------------------: |
-| Chapter 8   | ![Result](output.jpg)   |
+| Chapter 9   | ![Result](output.jpg)   |
 
 As stated in the book, Ray Tracing in One Weekend does not aim to create a complete ray tracer (more of a path tracer). The following books add more functionalities to the ray tracer, making it feature complete by the end of the series.
 
