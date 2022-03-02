@@ -40,6 +40,38 @@ func ComputeColor(ray *RTIW.Ray, surfaces *RTIW.Surfaces, depth int, r *rand.Ran
 	return computed
 }
 
+func RandomScene(r *rand.Rand) *RTIW.Surfaces {
+	scene := RTIW.Surfaces{}
+	scene.Add(Shapes.NewSphere(glm.Vec3{0, -1000, 0}, 1000, Materials.NewLambertian(glm.Vec3{0.5, 0.5, 0.5})))
+
+	limit := glm.Vec3{4, 0.2, 0}
+
+	for a := -11; a < 11; a++ {
+		for b := -11; b < 11; b++ {
+			chooseMaterial := r.Float32()
+			center := glm.Vec3{float32(a) + 0.9*r.Float32(), 0.2, float32(b) + 0.9*r.Float32()}
+			dist := center.Sub(&limit)
+			if dist.Len() > 0.9 { //Diffuse
+				if chooseMaterial < 0.8 {
+					lamb := glm.Vec3{r.Float32() * r.Float32(), r.Float32() * r.Float32(), r.Float32() * r.Float32()}
+					scene.Add(Shapes.NewSphere(center, 0.2, Materials.NewLambertian(lamb)))
+				} else if chooseMaterial < 0.95 { //Metal
+					metal := glm.Vec3{0.5 * (1 + r.Float32()), 0.5 * (1 + r.Float32()), 0.5 * (1 + r.Float32())}
+					scene.Add(Shapes.NewSphere(center, 0.2, Materials.NewMetal(metal, 0.5*r.Float32())))
+				} else { //Glass
+					scene.Add(Shapes.NewSphere(center, 0.2, Materials.NewDieletric(1.5)))
+				}
+			}
+		}
+	}
+
+	scene.Add(Shapes.NewSphere(glm.Vec3{0, 1, 0}, 1.0, Materials.NewDieletric(1.5)))
+	scene.Add(Shapes.NewSphere(glm.Vec3{-4, 1, 0}, 1.0, Materials.NewLambertian(glm.Vec3{0.4, 0.2, 0.1})))
+	scene.Add(Shapes.NewSphere(glm.Vec3{4, 1, 0}, 1.0, Materials.NewMetal(glm.Vec3{0.7, 0.6, 0.5}, 0.0)))
+
+	return &scene
+}
+
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
@@ -62,16 +94,15 @@ func main() {
 
 	defer file.Close()
 
-	nx := 200
-	ny := 100
+	nx := 1200
+	ny := 800
 	ns := 100
 
 	//Camera setup
-	origin := glm.Vec3{3, 3, 2}
-	lookAt := glm.Vec3{0, 0, -1}
-	focusVector := origin.Sub(&lookAt)
-	distToFocus := focusVector.Len()
-	aperture := float32(2.0)
+	origin := glm.Vec3{13, 2, 3}
+	lookAt := glm.Vec3{0, 0, 0}
+	distToFocus := float32(10.0)
+	aperture := float32(0.1)
 
 	camera := RTIW.NewCamera(
 		origin,                  //Origin
@@ -85,16 +116,8 @@ func main() {
 
 	output := image.NewRGBA(image.Rect(0, 0, nx, ny))
 
-	surfaces := RTIW.Surfaces{
-		List: []RTIW.Surface{
-			Shapes.NewSphere(glm.Vec3{0, 0, -1}, 0.5, Materials.NewLambertian(glm.Vec3{0.1, 0.2, 0.5})),
-			Shapes.NewSphere(glm.Vec3{0, -100.5, -1}, 100, Materials.NewLambertian(glm.Vec3{0.8, 0.8, 0.0})),
-			Shapes.NewSphere(glm.Vec3{1, 0, -1}, 0.5, Materials.NewMetal(glm.Vec3{0.8, 0.6, 0.2}, 1.0)),
-			Shapes.NewSphere(glm.Vec3{-1, 0, -1}, 0.5, Materials.NewDieletric(1.5)),
-		},
-	}
-
 	r := rand.New(rand.NewSource(time.Now().Unix()))
+	surfaces := RandomScene(r)
 
 	for j := 0; j < ny; j++ {
 		for i := 0; i < nx; i++ {
@@ -103,7 +126,7 @@ func main() {
 				u := (float32(i) + r.Float32()) / float32(nx)
 				v := (float32(j) + r.Float32()) / float32(ny)
 				ray := camera.GetRay(u, v, r)
-				color := ComputeColor(&ray, &surfaces, 0, r)
+				color := ComputeColor(&ray, surfaces, 0, r)
 				acc.AddWith(&color)
 			}
 

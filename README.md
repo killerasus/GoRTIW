@@ -6,9 +6,9 @@ As I am learning Go, I decided to translate the book's C++ implementation to Go.
 
 The current status of the code is shown below:
 
-| Chapter     | Result                  |
-| :---------: | :---------------------: |
-| Chapter 11   | ![Result](output.png)   |
+| Chapter           | Result                  |
+| :---------------: | :---------------------: |
+| Book 1 Complete   | ![Result](output.png)   |
 
 As stated in the book, Ray Tracing in One Weekend does not aim to create a complete ray tracer (more of a path tracer). The following books add more functionalities to the ray tracer, making it feature complete by the end of the series.
 

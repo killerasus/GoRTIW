@@ -9,6 +9,16 @@ type Surfaces struct {
 	List []Surface
 }
 
+func (s *Surfaces) Add(o Surface) {
+	s.List = append(s.List, o)
+}
+
+func (s *Surfaces) AddList(oo ...Surface) {
+	for _, o := range oo {
+		s.Add(o)
+	}
+}
+
 func (s *Surfaces) Hit(ray *Ray, tMin, tMax float32, hit *HitRecord) bool {
 	hitAnything := false
 	closest := tMax
