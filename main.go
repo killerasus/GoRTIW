@@ -13,6 +13,7 @@ import (
 	"math/rand"
 	"os"
 	"runtime/pprof"
+	"sync"
 	"time"
 
 	"github.com/engoengine/glm"
@@ -38,6 +39,28 @@ func ComputeColor(ray *RTIW.Ray, surfaces *RTIW.Surfaces, depth int, r *rand.Ran
 	computed := interpA.Mul(1.0 - t)
 	computed.AddScaledVec(t, &interpB)
 	return computed
+}
+
+func ComputePixel(i int, j int, nx int, ny int, ns int, camera *RTIW.Camera, surfaces *RTIW.Surfaces, output *image.RGBA, wg *sync.WaitGroup) {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	acc := glm.Vec3{}
+	for s := 0; s < ns; s++ {
+		u := (float32(i) + r.Float32()) / float32(nx)
+		v := (float32(j) + r.Float32()) / float32(ny)
+		ray := camera.GetRay(u, v, r)
+		color := ComputeColor(&ray, surfaces, 0, r)
+		acc.AddWith(&color)
+	}
+
+	acc.MulWith(1 / float32(ns))
+	acc = glm.Vec3{
+		float32(math.Sqrt(float64(acc.X()))),
+		float32(math.Sqrt(float64(acc.Y()))),
+		float32(math.Sqrt(float64(acc.Z()))),
+	}
+	c := Utils.ColorRGBAFromVec3(acc)
+	output.SetRGBA(i, ny-j, c)
+	wg.Done()
 }
 
 func RandomScene(r *rand.Rand) *RTIW.Surfaces {
@@ -119,30 +142,17 @@ func main() {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	surfaces := RandomScene(r)
 
+	var wg sync.WaitGroup
+	wg.Add(nx * ny)
 	for j := 0; j < ny; j++ {
 		for i := 0; i < nx; i++ {
-			acc := glm.Vec3{}
-			for s := 0; s < ns; s++ {
-				u := (float32(i) + r.Float32()) / float32(nx)
-				v := (float32(j) + r.Float32()) / float32(ny)
-				ray := camera.GetRay(u, v, r)
-				color := ComputeColor(&ray, surfaces, 0, r)
-				acc.AddWith(&color)
-			}
-
-			acc.MulWith(1 / float32(ns))
-			acc = glm.Vec3{
-				float32(math.Sqrt(float64(acc.X()))),
-				float32(math.Sqrt(float64(acc.Y()))),
-				float32(math.Sqrt(float64(acc.Z()))),
-			}
-			c := Utils.ColorRGBAFromVec3(acc)
-			output.SetRGBA(i, ny-j, c)
+			go ComputePixel(i, j, nx, ny, ns, camera, surfaces, output, &wg)
 		}
 	}
+	wg.Wait()
 
 	err = png.Encode(file, output)
 	if err != nil {
-		log.Fatal("error enconding jpg: ", err)
+		log.Fatal("error enconding png: ", err)
 	}
 }
