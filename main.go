@@ -96,6 +96,7 @@ func RandomScene(r *rand.Rand) *RTIW.Surfaces {
 }
 
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+var memoryprofile = flag.String("memoryprofile", "", "write memory profile to file")
 
 func main() {
 
@@ -154,5 +155,15 @@ func main() {
 	err = png.Encode(file, output)
 	if err != nil {
 		log.Fatal("error enconding png: ", err)
+	}
+
+	if *memoryprofile != "" {
+		f, err := os.Create(*memoryprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pprof.WriteHeapProfile(f)
+		f.Close()
 	}
 }
