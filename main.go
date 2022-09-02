@@ -6,12 +6,14 @@ import (
 	"RTIW/RTIW/Shapes"
 	"RTIW/RTIW/Utils"
 	"flag"
+	"fmt"
 	"image"
 	"image/png"
 	"log"
 	"math"
 	"math/rand"
 	"os"
+	"runtime"
 	"runtime/pprof"
 	"sync"
 	"time"
@@ -111,13 +113,6 @@ func main() {
 		defer pprof.StopCPUProfile()
 	}
 
-	file, err := os.Create("output.png")
-	if err != nil {
-		log.Fatal("error creating ouput file: ", err)
-	}
-
-	defer file.Close()
-
 	nx := 1200
 	ny := 800
 	ns := 100
@@ -138,23 +133,37 @@ func main() {
 		distToFocus,             //Distance to focus
 	)
 
-	output := image.NewRGBA(image.Rect(0, 0, nx, ny))
-
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	surfaces := RandomScene(r)
 
-	var wg sync.WaitGroup
-	wg.Add(nx * ny)
-	for j := 0; j < ny; j++ {
-		for i := 0; i < nx; i++ {
-			go ComputePixel(i, j, nx, ny, ns, camera, surfaces, output, &wg)
-		}
-	}
-	wg.Wait()
+	for t := 1; t <= runtime.NumCPU(); t++ {
+		runtime.GOMAXPROCS(t)
 
-	err = png.Encode(file, output)
-	if err != nil {
-		log.Fatal("error enconding png: ", err)
+		file, err := os.Create("output_" + fmt.Sprint(t) + ".png")
+		if err != nil {
+			log.Fatal("error creating ouput file: ", err)
+		}
+
+		output := image.NewRGBA(image.Rect(0, 0, nx, ny))
+		start := time.Now()
+
+		var wg sync.WaitGroup
+		wg.Add(nx * ny)
+		for j := 0; j < ny; j++ {
+			for i := 0; i < nx; i++ {
+				go ComputePixel(i, j, nx, ny, ns, camera, surfaces, output, &wg)
+			}
+		}
+		wg.Wait()
+
+		fmt.Println("Run #" + fmt.Sprint(t) + "\nTime: " + fmt.Sprint(time.Since(start)) + "\n")
+
+		err = png.Encode(file, output)
+		if err != nil {
+			log.Fatal("error enconding png: ", err)
+		}
+
+		file.Close()
 	}
 
 	if *memoryprofile != "" {
