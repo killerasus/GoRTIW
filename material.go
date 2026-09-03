@@ -1,4 +1,4 @@
-package RTIW
+package GoRTIW
 
 import (
 	"math/rand"

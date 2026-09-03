@@ -1,7 +1,7 @@
-package RTIW
+package GoRTIW
 
 import (
-	"RTIW/RTIW/Utils"
+	"GoRTIW/Utils"
 	"image"
 	"math"
 	"math/rand"

@@ -1,8 +1,8 @@
 package Materials
 
 import (
-	"RTIW/RTIW"
-	"RTIW/RTIW/Utils"
+	"GoRTIW"
+	"GoRTIW/Utils"
 	"math/rand"
 
 	"github.com/engoengine/glm"
@@ -23,12 +23,12 @@ func NewMetal(v glm.Vec3, f float32) *Metal {
 	return &m
 }
 
-func (m *Metal) Scatter(ray *RTIW.Ray, hr *RTIW.HitRecord, attenuation *glm.Vec3, scatter *RTIW.Ray, rand *rand.Rand) bool {
+func (m *Metal) Scatter(ray *GoRTIW.Ray, hr *GoRTIW.HitRecord, attenuation *glm.Vec3, scatter *GoRTIW.Ray, rand *rand.Rand) bool {
 	normDirection := ray.Direction.Normalized()
 	reflected := Utils.Reflect(&normDirection, &hr.Normal)
 	inSphere := Utils.RandomInUnitSphere(rand)
 	reflected.AddScaledVec(m.Fuzz, &inSphere)
-	*scatter = RTIW.Ray{Origin: hr.P, Direction: reflected}
+	*scatter = GoRTIW.Ray{Origin: hr.P, Direction: reflected}
 	*attenuation = m.Albedo
 	return scatter.Direction.Dot(&hr.Normal) > 0
 }

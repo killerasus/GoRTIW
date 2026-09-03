@@ -1,8 +1,8 @@
 package Materials
 
 import (
-	"RTIW/RTIW"
-	"RTIW/RTIW/Utils"
+	"GoRTIW"
+	"GoRTIW/Utils"
 	"math/rand"
 
 	"github.com/engoengine/glm"
@@ -16,13 +16,13 @@ func NewLambertian(v glm.Vec3) *Lambertian {
 	return &Lambertian{Albedo: v}
 }
 
-func (l *Lambertian) Scatter(ray *RTIW.Ray, hr *RTIW.HitRecord, attenuation *glm.Vec3, scatter *RTIW.Ray, rand *rand.Rand) bool {
+func (l *Lambertian) Scatter(ray *GoRTIW.Ray, hr *GoRTIW.HitRecord, attenuation *glm.Vec3, scatter *GoRTIW.Ray, rand *rand.Rand) bool {
 	target := hr.P
 	target.AddWith(&hr.Normal)
 	point := Utils.RandomInUnitSphere(rand)
 	target.AddWith(&point)
 	target.SubWith(&hr.P)
-	*scatter = RTIW.Ray{Origin: hr.P, Direction: target}
+	*scatter = GoRTIW.Ray{Origin: hr.P, Direction: target}
 	*attenuation = l.Albedo
 	return true
 }

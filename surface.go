@@ -1,4 +1,4 @@
-package RTIW
+package GoRTIW
 
 type Surface interface {
 	Hit(ray *Ray, tMin, tMax float32, hit *HitRecord) bool

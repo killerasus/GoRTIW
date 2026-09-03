@@ -1,22 +1,22 @@
 package Materials
 
 import (
-	"RTIW/RTIW"
-	"RTIW/RTIW/Utils"
+	"GoRTIW"
+	"GoRTIW/Utils"
 	"math/rand"
 
 	"github.com/engoengine/glm"
 )
 
-type Dieletric struct {
+type Dielectric struct {
 	ReflectionIdx float32
 }
 
-func NewDieletric(ri float32) *Dieletric {
-	return &Dieletric{ReflectionIdx: ri}
+func NewDielectric(ri float32) *Dielectric {
+	return &Dielectric{ReflectionIdx: ri}
 }
 
-func (d *Dieletric) Scatter(ray *RTIW.Ray, hr *RTIW.HitRecord, attenuation *glm.Vec3, scatter *RTIW.Ray, rand *rand.Rand) bool {
+func (d *Dielectric) Scatter(ray *GoRTIW.Ray, hr *GoRTIW.HitRecord, attenuation *glm.Vec3, scatter *GoRTIW.Ray, rand *rand.Rand) bool {
 	outwardNormal := glm.Vec3{}
 	reflected := Utils.Reflect(&ray.Direction, &hr.Normal)
 	niOverNt := float32(0.0)
@@ -43,9 +43,9 @@ func (d *Dieletric) Scatter(ray *RTIW.Ray, hr *RTIW.HitRecord, attenuation *glm.
 	}
 
 	if rand.Float32() < reflectProb {
-		*scatter = RTIW.Ray{Origin: hr.P, Direction: reflected}
+		*scatter = GoRTIW.Ray{Origin: hr.P, Direction: reflected}
 	} else {
-		*scatter = RTIW.Ray{Origin: hr.P, Direction: refracted}
+		*scatter = GoRTIW.Ray{Origin: hr.P, Direction: refracted}
 	}
 
 	return true

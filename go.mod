@@ -1,4 +1,4 @@
-module RTIW
+module GoRTIW
 
 go 1.17
 

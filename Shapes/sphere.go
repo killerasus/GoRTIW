@@ -1,7 +1,7 @@
 package Shapes
 
 import (
-	"RTIW/RTIW"
+	"GoRTIW"
 	"math"
 
 	"github.com/engoengine/glm"
@@ -10,14 +10,14 @@ import (
 type Sphere struct {
 	Center   glm.Vec3
 	Radius   float32
-	Material RTIW.Material
+	Material GoRTIW.Material
 }
 
-func NewSphere(center glm.Vec3, radius float32, material RTIW.Material) *Sphere {
+func NewSphere(center glm.Vec3, radius float32, material GoRTIW.Material) *Sphere {
 	return &Sphere{Center: center, Radius: radius, Material: material}
 }
 
-func (s *Sphere) Hit(ray *RTIW.Ray, tMin, tMax float32, hit *RTIW.HitRecord) bool {
+func (s *Sphere) Hit(ray *GoRTIW.Ray, tMin, tMax float32, hit *GoRTIW.HitRecord) bool {
 	oc := ray.Origin.Sub(&s.Center)
 	a := ray.Direction.Dot(&ray.Direction)
 	b := oc.Dot(&ray.Direction)
@@ -44,6 +44,6 @@ func (s *Sphere) Hit(ray *RTIW.Ray, tMin, tMax float32, hit *RTIW.HitRecord) boo
 	return false
 }
 
-func (s *Sphere) GetMaterial() RTIW.Material {
+func (s *Sphere) GetMaterial() GoRTIW.Material {
 	return s.Material
 }

@@ -1,4 +1,4 @@
-package RTIW
+package GoRTIW
 
 import "github.com/engoengine/glm"
 

@@ -1,6 +1,6 @@
 # Go Raytracing in One Weekend
 
-[![Go Version](https://img.shields.io/github/go-mod/go-version/killerasus/GoRTIW)](https://golang.org/)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/killerasus/GoGoRTIW)](https://golang.org/)
 
 This is an implementation of [Ray Tracing in One Weekend - The Book Series](https://raytracing.github.io/) using Go and [go-glm](https://github.com/engoengine/glm).
 
@@ -10,18 +10,11 @@ The current status of the code is shown below:
 
 | Chapter        | Status         | Output Preview      |
 |----------------|----------------|---------------------|
-| Book 1         | ✅ Complete    | [Screenshot](output.png) |
+| Book 1         | ✅ Complete    | [Screenshot](cmd/raytracer/output.png) |
 | Book 2         | ❌ WIP         |  |
 
 As stated in the book, Ray Tracing in One Weekend does not aim to create a complete ray tracer (more of a path tracer). The following books add more functionalities to the ray tracer, making it feature complete by the end of the series.
 
-
-## 🚀 Build & Run
-```bash
-go build 
-
-./RTIW 
-```
 
 ## 📚 References
 - [Book: Ray Tracing in One Weekend](https://raytracing.github.io/)

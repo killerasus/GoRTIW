@@ -1,9 +1,9 @@
 package main
 
 import (
-	"RTIW/RTIW"
-	"RTIW/RTIW/Materials"
-	"RTIW/RTIW/Shapes"
+	"GoRTIW"
+	"GoRTIW/Materials"
+	"GoRTIW/Shapes"
 	"flag"
 	"image"
 	"image/png"
@@ -17,8 +17,8 @@ import (
 	"github.com/engoengine/glm"
 )
 
-func RandomScene(r *rand.Rand) *RTIW.Surfaces {
-	scene := RTIW.Surfaces{}
+func RandomScene(r *rand.Rand) *GoRTIW.Surfaces {
+	scene := GoRTIW.Surfaces{}
 	scene.Add(Shapes.NewSphere(glm.Vec3{0, -1000, 0}, 1000, Materials.NewLambertian(glm.Vec3{0.5, 0.5, 0.5})))
 
 	limit := glm.Vec3{4, 0.2, 0}
@@ -36,13 +36,13 @@ func RandomScene(r *rand.Rand) *RTIW.Surfaces {
 					metal := glm.Vec3{0.5 * (1 + r.Float32()), 0.5 * (1 + r.Float32()), 0.5 * (1 + r.Float32())}
 					scene.Add(Shapes.NewSphere(center, 0.2, Materials.NewMetal(metal, 0.5*r.Float32())))
 				} else { //Glass
-					scene.Add(Shapes.NewSphere(center, 0.2, Materials.NewDieletric(1.5)))
+					scene.Add(Shapes.NewSphere(center, 0.2, Materials.NewDielectric(1.5)))
 				}
 			}
 		}
 	}
 
-	scene.Add(Shapes.NewSphere(glm.Vec3{0, 1, 0}, 1.0, Materials.NewDieletric(1.5)))
+	scene.Add(Shapes.NewSphere(glm.Vec3{0, 1, 0}, 1.0, Materials.NewDielectric(1.5)))
 	scene.Add(Shapes.NewSphere(glm.Vec3{-4, 1, 0}, 1.0, Materials.NewLambertian(glm.Vec3{0.4, 0.2, 0.1})))
 	scene.Add(Shapes.NewSphere(glm.Vec3{4, 1, 0}, 1.0, Materials.NewMetal(glm.Vec3{0.7, 0.6, 0.5}, 0.0)))
 
@@ -82,7 +82,7 @@ func main() {
 	distToFocus := float32(10.0)
 	aperture := float32(0.1)
 
-	camera := RTIW.NewCamera(
+	camera := GoRTIW.NewCamera(
 		origin,                  //Origin
 		lookAt,                  //LookAt
 		glm.Vec3{0, 1, 0},       //Up
@@ -101,7 +101,7 @@ func main() {
 	wg.Add(nx * ny)
 	for j := 0; j < ny; j++ {
 		for i := 0; i < nx; i++ {
-			go RTIW.ComputePixel(i, j, nx, ny, ns, camera, surfaces, output, &wg)
+			go GoRTIW.ComputePixel(i, j, nx, ny, ns, camera, surfaces, output, &wg)
 		}
 	}
 	wg.Wait()
